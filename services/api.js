@@ -3,7 +3,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Set your BASE_URL depending on testing device
-const BASE_URL = "http://192.168.29.227:8082/api"; 
+const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
 const API = axios.create({
   baseURL: BASE_URL,
