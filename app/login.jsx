@@ -14,6 +14,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loginUser } from "../services/authService";
+import { errorToast, successToast } from "../utils/toast";
 
 export default function Login() {
   const router = useRouter();
@@ -37,13 +38,18 @@ export default function Login() {
         await AsyncStorage.setItem("email", response.data.email);
         await AsyncStorage.setItem("name", response.data.name);
 
+        successToast({
+          message: "Login successfull"
+        })
         // Navigate to protected dashboard
         router.replace("/protected/dashboard");
       }
     } catch (error) {
-      const message =
+      const errorMessage =
         error?.response?.data?.message || "Something went wrong. Try again.";
-      Alert.alert("Login Error", message);
+      errorToast({
+        message: errorMessage
+      })
     } finally {
       setLoading(false);
     }

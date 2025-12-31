@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import AppButton from "../../components/AppButton";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import AppButton from "../../components/AppButton";
 import { logoutUser } from "../../services/authService";
+import { errorToast, successToast } from "../../utils/toast";
 
 export default function Profile() {
   const router = useRouter();
@@ -42,9 +43,15 @@ export default function Profile() {
       await AsyncStorage.removeItem("email");
       await AsyncStorage.removeItem("name");
 
+      successToast({
+        message: "Logged out successfull"
+      })
       router.replace("/login");
     } catch (error) {
       console.log("Logout error:", error?.response?.data || error.message);
+      errorToast({
+        message: "Logout failed. Please try again.",
+      });
     }
   };
 

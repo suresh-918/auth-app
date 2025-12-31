@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logoutUser } from "../../services/authService";
+import { successToast } from "../../utils/toast";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function Dashboard() {
       const storedEmail = await AsyncStorage.getItem("email");
 
       if (!token) {
-        router.replace("/login"); // Redirect to login if not authenticated
+        router.replace("/login"); 
         return;
       }
 
@@ -36,10 +37,15 @@ export default function Dashboard() {
       await AsyncStorage.removeItem("token");
       await AsyncStorage.removeItem("email");
 
-      // Redirect to login
-      router.replace("/logout");
+      successToast({
+        message: "Logged out successfull"
+      })
+      router.replace("/login");
     } catch (error) {
       console.log("Logout error:", error?.response?.data || error.message);
+      errorToast({
+        message: "Logout failed. Please try again.",
+      });
     }
   };
 

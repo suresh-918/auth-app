@@ -2,14 +2,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  Alert,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
-  View,
+  View
 } from "react-native";
 import { registerUser } from "../services/authService";
+import { errorToast, successToast } from "../utils/toast";
 
 export default function Register() {
   const router = useRouter();
@@ -39,15 +39,20 @@ export default function Register() {
       });
 
       if (response.status === 201) {
-         Alert.alert("Success", "Registration successful! Please login.");
-         
+         //Alert.alert("Success", "Registration successful! Please login.");
+         successToast({
+          message: "Registration successful! Please login."
+         })
          router.replace("/login");
       }
     } catch (error) {
-      const message =
+      const errorMessage =
         error?.response?.data?.message ||
         "Registration failed. Please try again.";
-      Alert.alert("Registration Error", message);
+      //Alert.alert("Registration Error", message);
+      errorToast({
+        message: errorMessage
+      })
     }
   };
 
