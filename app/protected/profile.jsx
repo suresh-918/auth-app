@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import AppButton from "../components/AppButton";
+import AppButton from "../../components/AppButton";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { logoutUser } from "../services/authService";
+import { logoutUser } from "../../services/authService";
 
 export default function Profile() {
   const router = useRouter();
@@ -16,14 +16,18 @@ export default function Profile() {
       const token = await AsyncStorage.getItem("token");
       const storedEmail = await AsyncStorage.getItem("email");
       const storedName = await AsyncStorage.getItem("name");
+
       if (!token) {
-        router.replace("/");
+        // Redirect to login if not authenticated
+        router.replace("/login");
         return;
       }
+
       setEmail(storedEmail || "");
       setName(storedName || "");
       setLoading(false);
     };
+
     loadUser();
   }, []);
 
@@ -33,11 +37,12 @@ export default function Profile() {
 
       await logoutUser(token);
 
+      // Clear storage
       await AsyncStorage.removeItem("token");
       await AsyncStorage.removeItem("email");
       await AsyncStorage.removeItem("name");
 
-      router.replace("/");
+      router.replace("/login");
     } catch (error) {
       console.log("Logout error:", error?.response?.data || error.message);
     }
@@ -46,7 +51,7 @@ export default function Profile() {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#2563eb" />
       </View>
     );
   }
@@ -61,7 +66,6 @@ export default function Profile() {
           <Text style={styles.value}>{email}</Text>
         </View>
 
-        {/* You can add more profile info here */}
         <View style={styles.profileBox}>
           <Text style={styles.label}>Name</Text>
           <Text style={styles.value}>{name}</Text>

@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import AppButton from "../components/AppButton";
+import AppButton from "../../components/AppButton";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { logoutUser } from "../services/authService";
+import { logoutUser } from "../../services/authService";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -16,11 +16,11 @@ export default function Dashboard() {
       const storedEmail = await AsyncStorage.getItem("email");
 
       if (!token) {
-        router.replace("/");
+        router.replace("/login"); // Redirect to login if not authenticated
         return;
       }
 
-      setEmail(storedEmail);
+      setEmail(storedEmail || "");
       setLoading(false);
     };
 
@@ -30,13 +30,14 @@ export default function Dashboard() {
   const handleLogout = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
-
       await logoutUser(token);
 
+      // Clear storage
       await AsyncStorage.removeItem("token");
       await AsyncStorage.removeItem("email");
 
-      router.replace("/");
+      // Redirect to login
+      router.replace("/logout");
     } catch (error) {
       console.log("Logout error:", error?.response?.data || error.message);
     }
@@ -45,7 +46,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#2563eb" />
       </View>
     );
   }
@@ -85,7 +86,7 @@ export default function Dashboard() {
         <View style={styles.actions}>
           <AppButton
             title="View Profile"
-            onPress={() => router.push("/profile")}
+            onPress={() => router.push("/protected/profile")}
           />
           <AppButton title="Logout" onPress={handleLogout} />
         </View>

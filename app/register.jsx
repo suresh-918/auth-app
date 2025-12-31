@@ -1,13 +1,14 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
-  View,
+  Alert,
+  Pressable,
+  StyleSheet,
   Text,
   TextInput,
-  StyleSheet,
-  Pressable,
-  Alert,
+  View,
 } from "react-native";
-import { useState } from "react";
-import { useRouter } from "expo-router";
 import { registerUser } from "../services/authService";
 
 export default function Register() {
@@ -16,6 +17,18 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await AsyncStorage.getItem("token");
+      if (token) {
+        // Redirect logged-in users to protected dashboard
+        router.replace("/protected/dashboard");
+      }
+    };
+    checkAuth();
+  }, []);
 
   const handleRegister = async () => {
     try {
@@ -26,7 +39,9 @@ export default function Register() {
       });
 
       if (response.status === 201) {
-        router.replace("/");
+         Alert.alert("Success", "Registration successful! Please login.");
+         
+         router.replace("/login");
       }
     } catch (error) {
       const message =

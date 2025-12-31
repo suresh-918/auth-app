@@ -5,38 +5,47 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import InputField from "../components/InputField";
 import AppButton from "../components/AppButton";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Alert } from "react-native";
 import { loginUser } from "../services/authService";
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Validation Error", "Please enter email and password.");
+      return;
+    }
+
+    setLoading(true);
     try {
-      const response = await loginUser({
-        email,
-        password,
-      });
+      const response = await loginUser({ email, password });
 
       if (response.status === 200) {
+        // Store token & user info
         await AsyncStorage.setItem("token", response.data.token);
         await AsyncStorage.setItem("email", response.data.email);
         await AsyncStorage.setItem("name", response.data.name);
-        router.replace("/dashboard");
+
+        // Navigate to protected dashboard
+        router.replace("/protected/dashboard");
       }
     } catch (error) {
       const message =
-        error?.response?.data?.message ||
-        "Something went wrong. Please try again.";
+        error?.response?.data?.message || "Something went wrong. Try again.";
       Alert.alert("Login Error", message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,12 +71,16 @@ export default function Login() {
           onChangeText={setPassword}
         />
 
-        <AppButton title="Login" onPress={handleLogin} />
-        <Pressable onPress={() => router.push("register")}>
-          <Text
-            style={{ textAlign: "center", marginTop: 15, color: "#2563eb" }}
-          >
-            Don't have an account? <Text style={styles.register}>Register</Text>
+        <AppButton
+          title={loading ? "Logging in..." : "Login"}
+          onPress={handleLogin}
+          disabled={loading}
+        />
+
+        <Pressable onPress={() => router.push("/register")}>
+          <Text style={styles.registerText}>
+            Don't have an account?{" "}
+            <Text style={styles.register}>Register</Text>
           </Text>
         </Pressable>
       </View>
@@ -93,6 +106,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
+  },
+  registerText: {
+    textAlign: "center",
+    marginTop: 15,
+    color: "#2563eb",
   },
   register: {
     textDecorationLine: "underline",
