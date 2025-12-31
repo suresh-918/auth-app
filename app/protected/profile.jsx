@@ -19,7 +19,6 @@ export default function Profile() {
       const storedName = await AsyncStorage.getItem("name");
 
       if (!token) {
-        // Redirect to login if not authenticated
         router.replace("/login");
         return;
       }

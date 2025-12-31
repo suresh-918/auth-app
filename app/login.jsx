@@ -41,7 +41,6 @@ export default function Login() {
         successToast({
           message: "Login successfull"
         })
-        // Navigate to protected dashboard
         router.replace("/protected/dashboard");
       }
     } catch (error) {

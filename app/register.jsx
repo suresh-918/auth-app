@@ -18,12 +18,10 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Check if user is already logged in
   useEffect(() => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem("token");
       if (token) {
-        // Redirect logged-in users to protected dashboard
         router.replace("/protected/dashboard");
       }
     };
@@ -39,8 +37,8 @@ export default function Register() {
       });
 
       if (response.status === 201) {
-         //Alert.alert("Success", "Registration successful! Please login.");
-         successToast({
+        //Alert.alert("Success", "Registration successful! Please login.");
+        successToast({
           message: "Registration successful! Please login."
          })
          router.replace("/login");

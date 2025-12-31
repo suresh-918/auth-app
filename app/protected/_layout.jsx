@@ -12,7 +12,6 @@ export default function ProtectedLayout() {
       const token = await AsyncStorage.getItem("token");
 
       if (!token) {
-        // If not logged in, redirect to login page
         router.replace("/login");
       } else {
         // If logged in, allow access to protected routes
@@ -24,7 +23,6 @@ export default function ProtectedLayout() {
   }, []);
 
   if (loading) {
-    // Show loading spinner while checking auth
     return (
       <View
         style={{
